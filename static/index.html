@@ -26,6 +26,9 @@
 				<li role='presentation'>
 					<a id='qa32' data-env='qa' role='menuitem' tabindex='-1' href='#qa32'>32</a>
 				</li>
+				<li role='presentation'>
+					<a id='qa42' data-env='qa' role='menuitem' tabindex='-1' href='#qa42'>42</a>
+				</li>
 			</ul>
 		</li>
 		<li role='presentation'><a href='#uat'>UAT</a></li>
@@ -39,7 +42,6 @@
 <script src='/resources/bootstrap.min.js'></script>
 <script>
 var socket = io();
-
 $(document).ready(function(){
 	$('.dropdown-menu li a').click(function(event) {
 		var selected = $(this).attr('id');
@@ -54,16 +56,14 @@ $(document).ready(function(){
 			body += '<strong>' + key + '</strong>: ' + value + '<br />';
 		});
 		return body;
-	}
+	};
 
 	socket.on('servers_update', function(data) {
 		var content = '';
-
 		if (data.hasOwnProperty('error')) {
 			$('.content').append('<h4>'+data.error+'</h4>');
 			return;
 		}
-
 		$.each(data, function(key, value) {
 			var bodyData = pickData(value.build_info);
 			content += "<div class='content'>"+

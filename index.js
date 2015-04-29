@@ -12,7 +12,7 @@ var urls = {
 		qa11: [{ name: 'CE_SC', url: 'http://qa11.contentsexpress.lan/release_info.json' }], 
 		qa32: [{ name: 'CE_SC', url: 'http://qa32.contentsexpress.lan/release_info.json' },
 			   { name: 'IAP_SC', url: 'http://qa32.contentsexpress.lan/iap/release_info.json'}],
-		qa42: [{ name: 'claimsws', url: 'http://qa42.contentsexpress.lan/release_info.json' }]
+		qa42: [{ name: 'claimsws', url: 'http://qa42.contentsexpress.lan/claimsws/release_info.json' }]
 	}
 };
 
@@ -30,16 +30,17 @@ function Exception(message) {
 
 io.on('connection', function(socket) {
 	console.log('connected');
+	var s = socket;
 	socket.on('getServerInfo', function(data) {
 		try {
-			generateMap(data.server, data.environment).bind(this);
+			generateMap(data.server, data.environment, s);
 		} catch(e) {
 			console.log(e);
 		}
 	});
 });
 
-var generateMap = function(server, env) {
+var generateMap = function(server, env, s) {
 
 	if (!urls.hasOwnProperty(env)) {
 		throw new Exception("Environment does not exist: " + env);
@@ -67,7 +68,7 @@ var generateMap = function(server, env) {
 				},
 				function(error) {
 					if(!error) {
-						io.emit('servers_update', resultsObj);
+						s.emit('servers_update', resultsObj);
 					}
 				}
 			);
@@ -87,7 +88,7 @@ function fetchData(url_obj, cb) {
 				cb(null, server_obj);
 			}
 		} else {
-			error += '\nResponse Code: ' + response.statusCode;
+			error = '\nResponse Code: ' + response.statusCode;
 			cb(error);
 		}
 	});
