@@ -7,6 +7,7 @@ var request = require('request');
 var async = require('async');
 
 var INTERVAL_SECS = 10;
+var refreshInterval;
 var urls = {
 	qa: {
 		qa11: [{ name: 'CE_SC', url: 'http://qa11.contentsexpress.lan/release_info.json' }], 
@@ -18,11 +19,6 @@ var urls = {
 
 app.use(express.static('static'));
 
-//Routes
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/static/index.html');
-});
-
 function Exception(message) {
 	this.message = message;
 	this.name = 'Exception';
@@ -31,9 +27,14 @@ function Exception(message) {
 io.on('connection', function(socket) {
 	console.log('connected');
 	var s = socket;
+
 	socket.on('getServerInfo', function(data) {
 		try {
+			if(refreshInterval) {
+				clearInterval(refreshInterval);
+			}
 			generateMap(data.server, data.environment, s);
+			refreshInterval = setInterval(function(){generateMap(data.server, data.environment, s)}, INTERVAL_SECS * 1000);
 		} catch(e) {
 			console.log(e);
 		}
@@ -49,7 +50,6 @@ var generateMap = function(server, env, s) {
 	}
 
 	var resultsObj = {};
-	console.log("FETCHING for " + server);
 	async.map(urls[env][server], fetchData, function(error, results) {
 		if (error) {
 			console.log(error);
@@ -68,6 +68,8 @@ var generateMap = function(server, env, s) {
 				},
 				function(error) {
 					if(!error) {
+						var d = new Date();
+						resultsObj['updated'] = d.toString();
 						s.emit('servers_update', resultsObj);
 					}
 				}

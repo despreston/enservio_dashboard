@@ -10,10 +10,10 @@
 			<a id='devdrop' href='#' class='dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' role='button' area-expanded='false'>Dev<span class='caret'></span></a>
 			<ul id='dev' class='dropdown-menu' role='menu' aria-labelledby='devdrop'>
 				<li role='presentation'>
-					<a id='dev02' data-env='dev' role='menuitem' tabindex='-1' href='#dev02'>02</a>
+					<a id='dev02' data-env='dev' role='menuitem' tabindex='-1' href='?dev#dev02'>02</a>
 				</li>
 				<li role='presentation'>
-					<a id='dev03' data-env='dev' role='menuitem' tabindex='-1' href='#dev03'>03</a>
+					<a id='dev03' data-env='dev' role='menuitem' tabindex='-1' href='?dev#dev03'>03</a>
 				</li>
 			</ul>
 		</li>
@@ -21,28 +21,37 @@
 			<a id='qadrop' href='#' class='dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' role='button' area-expanded='false'>QA<span class='caret'></span></a>
 			<ul class='dropdown-menu' role='menu' aria-labelledby='qadrop'>
 				<li role='presentation'>
-					<a id='qa11' data-env='qa' role='menuitem' tabindex='-1' href='#qa11'>11</a>
+					<a id='qa11' data-env='qa' role='menuitem' tabindex='-1' href='?qa#qa11'>11</a>
 				</li>
 				<li role='presentation'>
-					<a id='qa32' data-env='qa' role='menuitem' tabindex='-1' href='#qa32'>32</a>
+					<a id='qa32' data-env='qa' role='menuitem' tabindex='-1' href='?qa#qa32'>32</a>
 				</li>
 				<li role='presentation'>
-					<a id='qa42' data-env='qa' role='menuitem' tabindex='-1' href='#qa42'>42</a>
+					<a id='qa42' data-env='qa' role='menuitem' tabindex='-1' href='?qa#qa42'>42</a>
 				</li>
 			</ul>
 		</li>
 		<li role='presentation'><a href='#uat'>UAT</a></li>
 		<li role='presentation'><a href='#prod'>Prod</a></li>
 	</ul>
-
+	<div class='updated'></div>
 	<div class='accordion' id='accordion' role='tablist' aria-multiselectable='true'><div class='content'></div></div>
-
 <script src='socket.io.js'></script>
 <script src="/resources/jquery-2.1.3.min.js"></script>
 <script src='/resources/bootstrap.min.js'></script>
 <script>
 var socket = io();
 $(document).ready(function(){
+	(function checkRoute() {
+		var url = window.location.href, idx = url.indexOf('?');
+		if (idx != -1){
+			var eidx = url.indexOf('#'),
+				e = url.substring(idx+1, eidx);
+				s = url.substring(eidx+1);
+			socket.emit('getServerInfo', {server: s, environment: e});
+		}
+	})();
+
 	$('.dropdown-menu li a').click(function(event) {
 		var selected = $(this).attr('id');
 		var env = $(this).attr('data-env');
@@ -60,14 +69,16 @@ $(document).ready(function(){
 
 	socket.on('servers_update', function(data) {
 		var content = '';
+
 		if (data.hasOwnProperty('error')) {
 			$('.content').append('<h4>'+data.error+'</h4>');
 			return;
 		}
+		content += "<div class='content'>";
 		$.each(data, function(key, value) {
+			if (key === 'updated') return;
 			var bodyData = pickData(value.build_info);
-			content += "<div class='content'>"+
-						"<div class='panel panel-default'>" +
+			content +=	"<div class='panel panel-default'>" +
 							"<div class='panel-heading' role='tab' id='"+key+"'>" +
 								"<h4 class='panel-title'>" +
 									"<a class='collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapse"+key+"' aria-expanded='false' aria-controls='collapse"+key+"'>" +
@@ -80,10 +91,11 @@ $(document).ready(function(){
 								 bodyData+
 								"</div>"+
 							"</div>" +
-						"</div>"+
 						"</div>";
 		});
-		$('.content').append(content);
+		content += "</div>";
+		$('.content').replaceWith(content);
+		$('.updated').html(data.updated);
 	});
 });
 </script>
