@@ -7,7 +7,6 @@ var request = require('request');
 var async = require('async');
 
 var INTERVAL_SECS = 10;
-var refreshInterval;
 var urls = {
 	qa: {
 		qa11: [{ name: 'CE_SC', url: 'http://qa11.contentsexpress.lan/release_info.json' }], 
@@ -26,15 +25,16 @@ function Exception(message) {
 
 io.on('connection', function(socket) {
 	console.log('connected');
-	var s = socket;
+	var s = socket,
+		refreshInterval;
 
 	socket.on('getServerInfo', function(data) {
 		try {
 			if(refreshInterval) {
-				clearInterval(refreshInterval);
+				this.clearInterval(refreshInterval);
 			}
 			generateMap(data.server, data.environment, s);
-			refreshInterval = setInterval(function(){generateMap(data.server, data.environment, s)}, INTERVAL_SECS * 1000);
+			this.refreshInterval = setInterval(function(){generateMap(data.server, data.environment, s)}, INTERVAL_SECS * 1000);
 		} catch(e) {
 			console.log(e);
 		}
