@@ -6,13 +6,24 @@ var io = require('socket.io')(server);
 var request = require('request');
 var async = require('async');
 
-var INTERVAL_SECS = 10;
+var INTERVAL_SECS = 1800;
 var urls = {
 	qa: {
 		qa11: [{ name: 'CE_SC', url: 'http://qa11.contentsexpress.lan/release_info.json' }], 
 		qa32: [{ name: 'CE_SC', url: 'http://qa32.contentsexpress.lan/release_info.json' },
-			   { name: 'IAP_SC', url: 'http://qa32.contentsexpress.lan/iap/release_info.json'}],
-		qa42: [{ name: 'claimsws', url: 'http://qa42.contentsexpress.lan/claimsws/release_info.json' }]
+			   { name: 'IAP_SC', url: 'http://qa32.contentsexpress.lan/iap/release_info.json' }],
+		qa42: [{ name: 'CE_SC', url: 'http://qa42.contentsexpress.lan/release_info.json' },
+			   { name: 'IAP_SC', url: 'http://qa42.contentsexpress.lan/iap/release_info.json' },
+			   { name: 'Admin_SC', url: 'http://qa42.contentsexpress.lan/adminsc/release_info.json' },
+			   { name: 'claimsws', url: 'http://qa42.contentsexpress.lan/claimsws/release_info.json' },
+			   { name: 'ce_web', url: 'http://qa42.contentsexpress.lan/web/release_info.json' },
+			   { name: 'ce_app', url: 'http://qa42.contentsexpress.lan/app/release_info.json' },
+			   { name: 'adminws', url: 'http://qa42.contentsexpress.lan/adminws/release_info.json' },
+			   { name: 'IDP', url: 'http://qa42.contentsexpress.lan/idp/release_info.json' },
+			   { name: 'IntegrationWS', url: 'http://qa42.contentsexpress.lan/integrationws/release_info.json' }]
+	},
+	dev: {
+		dev02: [{ name: 'CASA_SC', url: 'http://dev02.contentsexpress.lan/casa/release_info.json' }]
 	}
 };
 
@@ -31,50 +42,68 @@ io.on('connection', function(socket) {
 	socket.on('getServerInfo', function(data) {
 		try {
 			if(refreshInterval) {
-				this.clearInterval(refreshInterval);
+				clearInterval(refreshInterval);
 			}
 			generateMap(data.server, data.environment, s);
-			this.refreshInterval = setInterval(function(){generateMap(data.server, data.environment, s)}, INTERVAL_SECS * 1000);
+			refreshInterval = setInterval(function(){generateMap(data.server, data.environment, s)}, INTERVAL_SECS * 1000);
 		} catch(e) {
 			console.log(e);
+			clearInterval(refreshInterval);
 		}
+	});
+	socket.on('disconnect', function(data) {
+		console.log('disconnected');
+		clearInterval(refreshInterval);
 	});
 });
 
 var generateMap = function(server, env, s) {
-
 	if (!urls.hasOwnProperty(env)) {
 		throw new Exception("Environment does not exist: " + env);
 	} else if (!urls[env].hasOwnProperty(server)) {
 		throw new Exception(env + ' does not have the server: ' + server);
 	}
-
-	var resultsObj = {};
+	
+	var resultsObj = {},
+		oldBuildTimestamp = (typeof oldBuildTimestamp === 'undefined' ? {} : oldBuildTimestamp);
+	
 	async.map(urls[env][server], fetchData, function(error, results) {
-		if (error) {
-			console.log(error);
-			resultsObj['error'] = error;
-			io.emit('servers_update', resultsObj);
-			return error;
-		} else {
 			async.each(results, 
+				//convert the array created by .map into an object
 				function(item, callback) {
 					for (key in item) {
 						if (item.hasOwnProperty(key)) {
-							resultsObj[key] = item[key];
+							if (item[key].hasOwnProperty('error')) {
+								resultsObj[key] = item[key];
+							} else {
+								// old build timestamp doesnt exist-- usually happens on first pass
+								if (!oldBuildTimestamp.hasOwnProperty(key)) { 
+									oldBuildTimestamp[key] = item[key].build_info.build_timestamp; 
+									resultsObj[key] = item[key];
+								}
+								// timestamp is different than the old one
+								else if (oldBuildTimestamp[key] != item[key].build_info.build_timestamp) {
+									oldBuildTimestamp[key] = item[key].build_info.build_timestamp; 
+									resultsObj[key] = item[key];
+									console.log('shit changed!');
+									resultsObj[key]['changed'] = true;
+								}
+								// time stamp is the same. don't append the updated flag
+								else {
+									resultsObj[key] = item[key];
+								}
+							}
 							callback();
 						}
 					}
+
 				},
-				function(error) {
-					if(!error) {
-						var d = new Date();
-						resultsObj['updated'] = d.toString();
-						s.emit('servers_update', resultsObj);
-					}
+				function() {
+					var d = new Date();
+					resultsObj['updated'] = d.toString();
+					s.emit('servers_update', resultsObj);
 				}
 			);
-		}
 	});
 };
 
@@ -90,8 +119,9 @@ function fetchData(url_obj, cb) {
 				cb(null, server_obj);
 			}
 		} else {
-			error = '\nResponse Code: ' + response.statusCode;
-			cb(error);
+			error = {message: 'URL: ' + url_obj.url + ' Response Code: ' + response.statusCode, server: url_obj.name};
+			server_obj[url_obj.name] = { error: error};
+			cb(null, server_obj);
 		}
 	});
 };
