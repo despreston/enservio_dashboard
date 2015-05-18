@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<title>Enservio Development Dashboard</title>
 	<link rel='stylesheet' href='/resources/bootstrap.min.css'>
+	<link rel='stylesheet' href='/resources/bootstrap-notify.css'>
 </head>
 <body>
 	<ul class='nav nav-tabs'>
@@ -31,16 +32,131 @@
 				</li>
 			</ul>
 		</li>
-		<li role='presentation'><a href='#uat'>UAT</a></li>
-		<li role='presentation'><a href='#prod'>Prod</a></li>
+		<li role='presentation'><a id='uat' data-env='uat' href='?uat#uat'>UAT</a></li>
+		<li role='presentation'><a id='prod' data-env='prod' href='?prod#prod'>Prod</a></li>
 	</ul>
 	<div style='padding: 0 10px'>
 		<p class='pull-right updated'></p>
 		<h4 class='server_name'></h4>
-		<div class='panel-group' id='accordion' role='tablist' aria-multiselectable='true'><div class='content'></div></div>
+		<div class='panel-group' id='accordion' role='tablist' aria-multiselectable='true'>
+			<div class='content'>
+				<div class='panel'>
+					<div class='panel-heading' role='tab' id='CE_SC'>
+						<h4 class='panel-title'>
+							<a class='collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseCE_SC' aria-expanded='false' aria-controls='collapseCE_SC'>CE_SC</a>
+							<div id='quick-info' class='pull-right' style='font-size:12px'></div>
+						</h4>
+					</div>
+					<div id='collapseCE_SC' class='panel-collapse collapse' role='tabpanel' aria-labelledby='CE_SC'>
+						<div class='panel-body'></div>
+					</div>
+				</div>
+				<div class='panel'>
+					<div class='panel-heading' role='tab' id='IAP_SC'>
+						<h4 class='panel-title'>
+							<a class='collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseIAP_SC' aria-expanded='false' aria-controls='collapseIAP_SC'>IAP_SC</a>
+							<div id='quick-info' class='pull-right' style='font-size:12px'></div>
+						</h4>
+					</div>
+					<div id='collapseIAP_SC' class='panel-collapse collapse' role='tabpanel' aria-labelledby='IAP_SC'>
+						<div class='panel-body'></div>
+					</div>
+				</div>
+				<div class='panel'>
+					<div class='panel-heading' role='tab' id='Admin_SC'>
+						<h4 class='panel-title'>
+							<a class='collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseAdmin_SC' aria-expanded='false' aria-controls='collapseAdmin_SC'>Admin_SC</a>
+							<div id='quick-info' class='pull-right' style='font-size:12px'></div>
+						</h4>
+					</div>
+					<div id='collapseAdmin_SC' class='panel-collapse collapse' role='tabpanel' aria-labelledby='Admin_SC'>
+						<div class='panel-body'></div>
+					</div>
+				</div>
+				<div class='panel'>
+					<div class='panel-heading' role='tab' id='claimsws'>
+						<h4 class='panel-title'>
+							<a class='collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseclaimsws' aria-expanded='false' aria-controls='collapseclaimsws'>claimsws</a>
+							<div id='quick-info' class='pull-right' style='font-size:12px'></div>
+						</h4>
+					</div>
+					<div id='collapseclaimsws' class='panel-collapse collapse' role='tabpanel' aria-labelledby='claimsws'>
+						<div class='panel-body'></div>
+					</div>
+				</div>
+				<div class='panel'>
+					<div class='panel-heading' role='tab' id='ce_web'>
+						<h4 class='panel-title'>
+							<a class='collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapsece_web' aria-expanded='false' aria-controls='collapsece_web'>ce_web</a>
+							<div id='quick-info' class='pull-right' style='font-size:12px'></div>
+						</h4>
+					</div>
+					<div id='collapsece_web' class='panel-collapse collapse' role='tabpanel' aria-labelledby='ce_web'>
+						<div class='panel-body'></div>
+					</div>
+				</div>
+				<div class='panel'>
+					<div class='panel-heading' role='tab' id='ce_app'>
+						<h4 class='panel-title'>
+							<a class='collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapsece_app' aria-expanded='false' aria-controls='collapsece_app'>ce_app</a>
+							<div id='quick-info' class='pull-right' style='font-size:12px'></div>
+						</h4>
+					</div>
+					<div id='collapsece_app' class='panel-collapse collapse' role='tabpanel' aria-labelledby='ce_app'>
+						<div class='panel-body'></div>
+					</div>
+				</div>
+				<div class='panel'>
+					<div class='panel-heading' role='tab' id='adminws'>
+						<h4 class='panel-title'>
+							<a class='collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseadminws' aria-expanded='false' aria-controls='collapseadminws'>adminws</a>
+							<div id='quick-info' class='pull-right' style='font-size:12px'></div>
+						</h4>
+					</div>
+					<div id='collapseadminws' class='panel-collapse collapse' role='tabpanel' aria-labelledby='adminws'>
+						<div class='panel-body'></div>
+					</div>
+				</div>
+				<div class='panel'>
+					<div class='panel-heading' role='tab' id='IDP'>
+						<h4 class='panel-title'>
+							<a class='collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseIDP' aria-expanded='false' aria-controls='collapseIDP'>IDP</a>
+							<div id='quick-info' class='pull-right' style='font-size:12px'></div>
+						</h4>
+					</div>
+					<div id='collapseIDP' class='panel-collapse collapse' role='tabpanel' aria-labelledby='IDP'>
+						<div class='panel-body'></div>
+					</div>
+				</div>
+				<div class='panel'>
+					<div class='panel-heading' role='tab' id='IntegrationWS'>
+						<h4 class='panel-title'>
+							<a class='collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseIntegrationWS' aria-expanded='false' aria-controls='collapseIntegrationWS'>IntegrationWS</a>
+							<div id='quick-info' class='pull-right' style='font-size:12px'></div>
+						</h4>
+					</div>
+					<div id='collapseIntegrationWS' class='panel-collapse collapse' role='tabpanel' aria-labelledby='IntegrationWS'>
+						<div class='panel-body'></div>
+					</div>
+				</div>		
+				<div class='panel'>
+					<div class='panel-heading' role='tab' id='CASA_TEST'>
+						<h4 class='panel-title'>
+							<a class='collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseCASA_TEST' aria-expanded='false' aria-controls='collapseCASA_TEST'>CASA TEST</a>
+							<div id='quick-info' class='pull-right' style='font-size:12px'></div>
+						</h4>
+					</div>
+					<div id='collapseCASA_TEST' class='panel-collapse collapse' role='tabpanel' aria-labelledby='CASA_TEST'>
+						<div class='panel-body'></div>
+					</div>
+				</div>		
+			</div>
+		</div>
 	</div>
+	<div class='notifications bottom-right'></div>
 <script src="/resources/jquery-2.1.3.min.js"></script>
 <script src='/resources/bootstrap.min.js'></script>
+<script src='/resources/bootstrap-notify.js'></script>
 <script src='socket.io.js'></script>
 <script>
 var socket = io();
@@ -60,7 +176,6 @@ $(document).ready(function(){
 		var selected = $(this).attr('id');
 		var env = $(this).attr('data-env');
 		$('.server_name').html(selected);
-		$('.content').html('');
 		socket.emit('getServerInfo', { server: selected, environment: env});
 	});
 
@@ -72,13 +187,21 @@ $(document).ready(function(){
 		return body;
 	};
 
+	var updateMessage = function(message) {
+		$('.bottom-right').notify({
+			message: { html: message },
+			fadeOut: { enabled: false, delay: 3000 }
+		}).show();
+	};
+
 	socket.on('servers_update', function(data) {
-		var content = '',
-			bodyData = '',
+		var bodyData = '',
 			panelHeaderStyle;
 
 		$.each(data, function(key, value) {
 			if (key === 'updated') return;
+			var download_url = '';
+
 			if(data[key].hasOwnProperty('error')) {
 				bodyData = data[key].error.message;
 				panelHeaderStyle = 'danger';
@@ -86,27 +209,21 @@ $(document).ready(function(){
 				//temporary. not everything has deploy info right now
 				if (value.deploy_info) {
 					bodyData = pickData(value.build_info) + pickData(value.deploy_info);
+					download_url = ' (<a href="'+value.deploy_info.download_url+'">Download</a>)';
 				} else {
 					bodyData = pickData(value.build_info);
 				}
-				panelHeaderStyle = value.changed ? 'success' : 'default';
+				panelHeaderStyle = 'default';
+				$("#"+key+" #quick-info").html('Version: ' + value.build_info.build_version + download_url);
+				
+				if ($("#collapse"+key+" > .panel-body").html() != '') {
+					updateMessage('<strong>'+ key + '</strong> has a fresh build!');
+				}
 			}
-			content +=	"<div class='panel panel-"+panelHeaderStyle+"'>" +
-							"<div class='panel-heading' role='tab' id='"+key+"'>" +
-								"<h4 class='panel-title'>" +
-									"<a class='collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapse"+key+"' aria-expanded='false' aria-controls='collapse"+key+"'>" +
-									 key+
-									"</a>" +
-								"</h4>" +
-							"</div>" +
-							"<div id='collapse"+key+"' class='panel-collapse collapse' role='tabpanel' aria-labelledby='"+key+"'>" +
-								"<div class='panel-body'>" +
-								 bodyData+
-								"</div>"+
-							"</div>" +
-						"</div>";
+			$("#"+key).parent().addClass('panel-'+panelHeaderStyle);
+			$("#collapse"+key+" > .panel-body").html(bodyData);
+			
 		});
-		$('.content').html(content);
 		$('.updated').html('Last Updated: ' + data.updated);
 	});
 });

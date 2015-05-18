@@ -6,12 +6,27 @@ var io = require('socket.io')(server);
 var request = require('request');
 var async = require('async');
 
-var INTERVAL_SECS = 1800;
+var INTERVAL_SECS = 10; // seconds
 var urls = {
 	qa: {
-		qa11: [{ name: 'CE_SC', url: 'http://qa11.contentsexpress.lan/release_info.json' }], 
+		qa11: [{ name: 'CE_SC', url: 'http://qa11.contentsexpress.lan/release_info.json' },
+			   { name: 'IAP_SC', url: 'http://qa11.contentsexpress.lan/iap/release_info.json' },
+			   { name: 'Admin_SC', url: 'http://qa11.contentsexpress.lan/adminsc/release_info.json' },
+			   { name: 'claimsws', url: 'http://qa11.contentsexpress.lan/claimsws/release_info.json' },
+			   { name: 'ce_web', url: 'http://qa11.contentsexpress.lan/web/release_info.json' },
+			   { name: 'ce_app', url: 'http://qa11.contentsexpress.lan/app/release_info.json' },
+			   { name: 'adminws', url: 'http://qa11.contentsexpress.lan/adminws/release_info.json' },
+			   { name: 'IDP', url: 'http://qa11.contentsexpress.lan/idp/release_info.json' },
+			   { name: 'IntegrationWS', url: 'http://qa11.contentsexpress.lan/integrationws/release_info.json' }],
 		qa32: [{ name: 'CE_SC', url: 'http://qa32.contentsexpress.lan/release_info.json' },
-			   { name: 'IAP_SC', url: 'http://qa32.contentsexpress.lan/iap/release_info.json' }],
+			   { name: 'IAP_SC', url: 'http://qa32.contentsexpress.lan/iap/release_info.json' },
+			   { name: 'Admin_SC', url: 'http://qa32.contentsexpress.lan/adminsc/release_info.json' },
+			   { name: 'claimsws', url: 'http://qa32.contentsexpress.lan/claimsws/release_info.json' },
+			   { name: 'ce_web', url: 'http://qa32.contentsexpress.lan/web/release_info.json' },
+			   { name: 'ce_app', url: 'http://qa32.contentsexpress.lan/app/release_info.json' },
+			   { name: 'adminws', url: 'http://qa32.contentsexpress.lan/adminws/release_info.json' },
+			   { name: 'IDP', url: 'http://qa32.contentsexpress.lan/idp/release_info.json' },
+			   { name: 'IntegrationWS', url: 'http://qa42.contentsexpress.lan/integrationws/release_info.json' }],
 		qa42: [{ name: 'CE_SC', url: 'http://qa42.contentsexpress.lan/release_info.json' },
 			   { name: 'IAP_SC', url: 'http://qa42.contentsexpress.lan/iap/release_info.json' },
 			   { name: 'Admin_SC', url: 'http://qa42.contentsexpress.lan/adminsc/release_info.json' },
@@ -23,8 +38,35 @@ var urls = {
 			   { name: 'IntegrationWS', url: 'http://qa42.contentsexpress.lan/integrationws/release_info.json' }]
 	},
 	dev: {
-		dev02: [{ name: 'CASA_SC', url: 'http://dev02.contentsexpress.lan/casa/release_info.json' }]
+		dev02: [{ name: 'CASA_TEST', url: 'http://dev02.contentsexpress.lan/casa/release_info.json'},
+				{ name: 'CE_SC', url: 'http://dev02.contentsexpress.lan/release_info.json' },
+			    { name: 'IAP_SC', url: 'http://dev02.contentsexpress.lan/iap/release_info.json' },
+			    { name: 'Admin_SC', url: 'http://dev02.contentsexpress.lan/adminsc/release_info.json' },
+			    { name: 'claimsws', url: 'http://dev02.contentsexpress.lan/claimsws/release_info.json' },
+			    { name: 'ce_web', url: 'http://dev02.contentsexpress.lan/web/release_info.json' },
+			    { name: 'ce_app', url: 'http://dev02.contentsexpress.lan/app/release_info.json' },
+			    { name: 'adminws', url: 'http://dev02.contentsexpress.lan/adminws/release_info.json' },
+			    { name: 'IDP', url: 'http://dev02.contentsexpress.lan/idp/release_info.json' },
+			    { name: 'IntegrationWS', url: 'http://dev02.contentsexpress.lan/integrationws/release_info.json' }], 
+		dev03: [{ name: 'CE_SC', url: 'http://dev03.contentsexpress.lan/release_info.json' },
+			    { name: 'IAP_SC', url: 'http://dev03.contentsexpress.lan/iap/release_info.json' },
+			    { name: 'Admin_SC', url: 'http://dev03.contentsexpress.lan/adminsc/release_info.json' },
+			    { name: 'claimsws', url: 'http://dev03.contentsexpress.lan/claimsws/release_info.json' },
+			    { name: 'ce_web', url: 'http://dev03.contentsexpress.lan/web/release_info.json' },
+			    { name: 'ce_app', url: 'http://dev03.contentsexpress.lan/app/release_info.json' },
+			    { name: 'adminws', url: 'http://dev03.contentsexpress.lan/adminws/release_info.json' },
+			    { name: 'IDP', url: 'http://dev03.contentsexpress.lan/idp/release_info.json' },
+			    { name: 'IntegrationWS', url: 'http://dev03.contentsexpress.lan/integrationws/release_info.json' }],
+	},
+	uat: {
+		uat: [{ name: 'CE_SC', url: 'http://apps1test.enservio.com/release_info.json' },
+			  { name: 'IAP_SC', url: 'http://apps1test.enservio.com/iap/release_info.json' }],
+	},
+	prod: {
+		prod: [{ name: 'CE_SC', url: 'http://apps1.enservio.com/release_info.json' },
+			   { name: 'IAP_SC', url: 'http://apps1.enservio.com/iap/release_info.json' }],
 	}
+
 };
 
 app.use(express.static('static'));
@@ -39,13 +81,15 @@ io.on('connection', function(socket) {
 	var s = socket,
 		refreshInterval;
 
+	var oldBuildTimestamp = (typeof oldBuildTimestamp === 'undefined' ? {} : oldBuildTimestamp);
+
 	socket.on('getServerInfo', function(data) {
 		try {
 			if(refreshInterval) {
 				clearInterval(refreshInterval);
 			}
-			generateMap(data.server, data.environment, s);
-			refreshInterval = setInterval(function(){generateMap(data.server, data.environment, s)}, INTERVAL_SECS * 1000);
+			generateMap(data.server, data.environment, s, oldBuildTimestamp);
+			refreshInterval = setInterval(function(){generateMap(data.server, data.environment, s, oldBuildTimestamp)}, INTERVAL_SECS * 1000);
 		} catch(e) {
 			console.log(e);
 			clearInterval(refreshInterval);
@@ -57,15 +101,14 @@ io.on('connection', function(socket) {
 	});
 });
 
-var generateMap = function(server, env, s) {
+var generateMap = function(server, env, s, oldBuildTimestamp) {
 	if (!urls.hasOwnProperty(env)) {
 		throw new Exception("Environment does not exist: " + env);
 	} else if (!urls[env].hasOwnProperty(server)) {
 		throw new Exception(env + ' does not have the server: ' + server);
 	}
-	
-	var resultsObj = {},
-		oldBuildTimestamp = (typeof oldBuildTimestamp === 'undefined' ? {} : oldBuildTimestamp);
+
+	var resultsObj = {};
 	
 	async.map(urls[env][server], fetchData, function(error, results) {
 			async.each(results, 
@@ -85,12 +128,11 @@ var generateMap = function(server, env, s) {
 								else if (oldBuildTimestamp[key] != item[key].build_info.build_timestamp) {
 									oldBuildTimestamp[key] = item[key].build_info.build_timestamp; 
 									resultsObj[key] = item[key];
-									console.log('shit changed!');
-									resultsObj[key]['changed'] = true;
 								}
 								// time stamp is the same. don't append the updated flag
 								else {
-									resultsObj[key] = item[key];
+									delete resultsObj[key]; // no need to send old data 
+									//resultsObj[key] = item[key];
 								}
 							}
 							callback();
