@@ -177,6 +177,7 @@ $(document).ready(function(){
 		var env = $(this).attr('data-env');
 		$('.server_name').html(selected);
 		socket.emit('getServerInfo', { server: selected, environment: env});
+		$('.panel-body').html('');
 	});
 
 	var pickData = function(data) {

@@ -6,7 +6,7 @@ var io = require('socket.io')(server);
 var request = require('request');
 var async = require('async');
 
-var INTERVAL_SECS = 10; // seconds
+var INTERVAL_SECS = 300; // seconds
 var urls = {
 	qa: {
 		qa11: [{ name: 'CE_SC', url: 'http://qa11.contentsexpress.lan/release_info.json' },
